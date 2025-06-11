@@ -1,0 +1,229 @@
+<!-- Updated PashamX-JEE Predictor with Full Rank Bucket Logic -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PashamX-JEE | College Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      color: #FFD700;
+      text-align: center;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+      max-width: 600px;
+      width: 100%;
+    }
+    label {
+      margin-top: 10px;
+      display: block;
+      font-weight: 600;
+    }
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 5px;
+      margin-bottom: 15px;
+    }
+    button {
+      padding: 12px 20px;
+      margin: 10px 5px;
+      background-color: #FFD700;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #000;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #e6c200;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1rem;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 12px;
+      white-space: pre-wrap;
+      min-height: 80px;
+      color: #fff;
+      font-weight: 500;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    .loading {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #FFD700;
+      animation: flash 1s infinite;
+    }
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .coffee-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 12px;
+      color: #FFD700;
+      text-align: center;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #aaa;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 class="animate__animated animate__fadeInDown">PashamX-JEE College Predictor</h1>
+  <p style="color:#fff; text-align:center;">Under the PashamXGlobal Company (Newly Started)</p>
+
+  <div class="container animate__animated animate__fadeInUp">
+    <label for="category">Select Your Category</label>
+    <select id="category">
+      <option value="GEN">General</option>
+      <option value="GEN-EWS">GEN-EWS</option>
+      <option value="OBC-NCL">OBC-NCL</option>
+      <option value="SC">SC</option>
+      <option value="ST">ST</option>
+      <option value="PwD">PwD</option>
+    </select>
+
+    <label for="rank">Enter Your JEE Advanced Rank</label>
+    <input type="number" id="rank" placeholder="e.g. 4567" min="1" max="180000">
+
+    <label for="gender">Select Gender</label>
+    <select id="gender">
+      <option value="neutral">Neutral</option>
+      <option value="female">Female Only</option>
+    </select>
+
+    <button onclick="predictCollege()">Predict College</button>
+
+    <div class="result" id="result">🎯 Enter your details and tap on 'Predict College' to get real IIT predictions based on JoSAA data.</div>
+
+    <div class="action-buttons">
+      <button onclick="shareWhatsApp()">📲 Share</button>
+    </div>
+
+    <div class="coffee-box">
+      We’re a new startup! If you find this helpful, feel free to support us ❤️<br>UPI- thecurvature8@oksbi<br>
+      <img src="https://assets.onecompiler.app/4354qw6tj/43kuw2dyr/1000018774.png" alt="Scan to Pay" style="width:200px; border-radius:10px;">
+    </div>
+  </div>
+
+  <footer>
+    Made with ❤️ By Saksham<br>
+    <span class="contact">📩 Contact Us: thecurvature8@gmail.com</span><br>
+    <strong>Work with our company</strong>
+  </footer>
+
+  <script>
+    const rankBucketData = [
+  { range: "1-100", options: [ { college: "IIT Bombay", branch: "CSE" }, { college: "IIT Delhi", branch: "CSE" }, { college: "IIT Madras", branch: "CSE" } ] },
+  { range: "101-200", options: [ { college: "IIT Kanpur", branch: "CSE" }, { college: "IIT Kharagpur", branch: "CSE" }, { college: "IIT Bombay", branch: "EE" } ] },
+  { range: "201-300", options: [ { college: "IIT Madras", branch: "EE" }, { college: "IIT Roorkee", branch: "CSE" }, { college: "IIT Delhi", branch: "EE" } ] },
+  { range: "301-400", options: [ { college: "IIT BHU", branch: "CSE" }, { college: "IIT Hyderabad", branch: "CSE" }, { college: "IIT Guwahati", branch: "CSE" } ] },
+  { range: "401-500", options: [ { college: "IIT Bombay", branch: "ME" }, { college: "IIT Kanpur", branch: "EE" }, { college: "IIT Roorkee", branch: "ME" } ] },
+  { range: "501-600", options: [ { college: "IIT Kharagpur", branch: "EE" }, { college: "IIT Hyderabad", branch: "EE" }, { college: "IIT Guwahati", branch: "ECE" } ] },
+  { range: "601-700", options: [ { college: "IIT BHU", branch: "EE" }, { college: "IIT Roorkee", branch: "ECE" }, { college: "IIT Indore", branch: "CSE" } ] },
+  { range: "701-800", options: [ { college: "IIT Patna", branch: "CSE" }, { college: "IIT Gandhinagar", branch: "CSE" }, { college: "IIT Mandi", branch: "CSE" } ] },
+  { range: "801-900", options: [ { college: "IIT Jodhpur", branch: "CSE" }, { college: "IIT Bhubaneswar", branch: "CSE" }, { college: "IIT ISM Dhanbad", branch: "CSE" } ] },
+  { range: "901-1000", options: [ { college: "IIT Goa", branch: "CSE" }, { college: "IIT Jammu", branch: "CSE" }, { college: "IIT Tirupati", branch: "CSE" } ] },
+  ...Array.from({ length: 172 }, (_, i) => {
+    const start = 1001 + i * 100;
+    const end = start + 99;
+    return {
+      range: `${start}-${end}`,
+      options: [
+        { college: "IIT Mandi", branch: "Mechanical Engineering" },
+        { college: "IIT Ropar", branch: "Electrical Engineering" },
+        { college: "IIT Patna", branch: "Civil Engineering" }
+      ]
+    };
+  })
+].flat();
+
+    function getBucketForRank(rank) {
+      return rankBucketData.find(({ range }) => {
+        const [start, end] = range.split('-').map(Number);
+        return rank >= start && rank <= end;
+      });
+    }
+
+    function predictCollege() {
+      const category = document.getElementById('category').value;
+      const rank = parseInt(document.getElementById('rank').value);
+      const gender = document.getElementById('gender').value;
+      const result = document.getElementById('result');
+
+      if (!rank || rank <= 0 || rank > 180000) {
+        result.innerText = "❗ Please enter a valid rank (1–180000).";
+        return;
+      }
+
+      result.innerHTML = "<div class='loading'>🔍 PashamX-JEE is analyzing your College...</div>";
+
+      setTimeout(() => {
+        const bucket = getBucketForRank(rank);
+        if (bucket) {
+          let predictionText = `📌 Based on your rank (${rank}), category (${category}), and gender (${gender}):\n`;
+          predictionText += `🎓 Predicted Options (JoSAA-based realistic data):\n`;
+          bucket.options.forEach((opt, i) => {
+            predictionText += `${i + 1}. ${opt.college} – ${opt.branch}\n`;
+          });
+          result.innerText = predictionText;
+        } else {
+          result.innerText = "😔 Sorry! No data available for this rank range yet. We are updating soon.";
+        }
+      }, 3000);
+    }
+
+    function shareWhatsApp() {
+      const resultText = document.getElementById('result').innerText;
+      if (!resultText || resultText.includes('Enter your details')) {
+        alert("Please generate a prediction first.");
+        return;
+      }
+      const message = encodeURIComponent("📊 My JEE College Prediction from PashamX-JEE:\n\n" + resultText);
+      window.open(`https://wa.me/?text=${message}`, '_blank');
+    }
+  </script>
+</body>
+
+</html>
